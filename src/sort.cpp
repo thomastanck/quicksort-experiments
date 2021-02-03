@@ -7,6 +7,7 @@
 #include "hoare.hpp"
 #include "median_pivot.hpp"
 #include "random_pivot.hpp"
+#include "xorshift.hpp"
 
 int main() {
 	// some tests
@@ -75,6 +76,17 @@ int main() {
 		{
 			std::vector v{ 20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1 };
 			hoare_quicksort(v.begin(), v.end(), std::less<>{}, random_pivot_selector{ mt_rng });
+			assert(v == sorted);
+		}
+		xorshift64 xs_rng;
+		{
+			std::vector v{ 11,12,13,14,15,16,17,18,19,20,1,2,3,4,5,6,7,8,9,10 };
+			hoare_quicksort(v.begin(), v.end(), std::less<>{}, random_pivot_selector{ xs_rng });
+			assert(v == sorted);
+		}
+		{
+			std::vector v{ 20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1 };
+			hoare_quicksort(v.begin(), v.end(), std::less<>{}, random_pivot_selector{ xs_rng });
 			assert(v == sorted);
 		}
 	}
