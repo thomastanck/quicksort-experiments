@@ -38,7 +38,7 @@ inline void guarded_insertion_sort_impl(RandomIt first, RandomIt last, Compare&&
     }
 }
 
-// Expects: Each element is less than INSERTION_SORT_THRESHOLD positions away from its proper location
+// Expects: Each element is less than INSERTION_SORT_THRESHOLD positions away from its proper location, and last-first>=2
 // Ensures: Range is sorted.
 template <typename RandomIt, typename Compare>
 inline void final_insertion_sort(RandomIt first, RandomIt last, Compare&& comp) {
