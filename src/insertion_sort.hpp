@@ -43,7 +43,7 @@ inline void guarded_insertion_sort_impl(RandomIt first, RandomIt last, Compare&&
 template <typename RandomIt, typename Compare>
 inline void final_insertion_sort(RandomIt first, RandomIt last, Compare&& comp) {
     assert(first + 2 <= last);
-    if (static_cast<size_t>(last - first) > INSERTION_SORT_THRESHOLD) {
+    if (last - first > static_cast<std::ptrdiff_t>(INSERTION_SORT_THRESHOLD)) {
         RandomIt threshold_it = first + INSERTION_SORT_THRESHOLD + 1;
         guarded_insertion_sort_impl(first, threshold_it, comp);
         for (RandomIt it = threshold_it; it != last; ++it) {
