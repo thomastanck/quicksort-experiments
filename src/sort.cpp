@@ -15,12 +15,12 @@ int main() {
 		std::vector sorted{ 1,2,3,4,5 };
 		{
 			std::vector v{ 1,2,3,4,5 };
-			final_insertion_sort(v.begin(), v.end(), std::less<>{});
+			final_insertion_sort<16>{}(v.begin(), v.end(), std::less<>{});
 			assert(v == sorted);
 		}
 		{
 			std::vector v{ 5,4,3,2,1 };
-			final_insertion_sort(v.begin(), v.end(), std::less<>{});
+			final_insertion_sort<16>{}(v.begin(), v.end(), std::less<>{});
 			assert(v == sorted);
 		}
 	}
@@ -28,7 +28,7 @@ int main() {
 		std::vector sorted{ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 };
 		{
 			std::vector v{ 11,12,13,14,15,16,17,18,19,20,1,2,3,4,5,6,7,8,9,10 };
-			final_insertion_sort(v.begin(), v.end(), std::less<>{});
+			final_insertion_sort<16>{}(v.begin(), v.end(), std::less<>{});
 			assert(v == sorted);
 		}
 	}
@@ -59,34 +59,34 @@ int main() {
 		std::vector sorted{ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 };
 		{
 			std::vector v{ 11,12,13,14,15,16,17,18,19,20,1,2,3,4,5,6,7,8,9,10 };
-			hoare_quicksort(v.begin(), v.end(), std::less<>{}, tri_median_pivot_selector{});
+			hoare_quicksort<16>{}(v.begin(), v.end(), std::less<>{}, tri_median_pivot_selector{});
 			assert(v == sorted);
 		}
 		{
 			std::vector v{ 20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1 };
-			hoare_quicksort(v.begin(), v.end(), std::less<>{}, tri_median_pivot_selector{});
+			hoare_quicksort<16>{}(v.begin(), v.end(), std::less<>{}, tri_median_pivot_selector{});
 			assert(v == sorted);
 		}
 		std::mt19937_64 mt_rng;
 		{
 			std::vector v{ 11,12,13,14,15,16,17,18,19,20,1,2,3,4,5,6,7,8,9,10 };
-			hoare_quicksort(v.begin(), v.end(), std::less<>{}, random_pivot_selector{ mt_rng });
+			hoare_quicksort<16>{}(v.begin(), v.end(), std::less<>{}, random_pivot_selector{ mt_rng });
 			assert(v == sorted);
 		}
 		{
 			std::vector v{ 20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1 };
-			hoare_quicksort(v.begin(), v.end(), std::less<>{}, random_pivot_selector{ mt_rng });
+			hoare_quicksort<16>{}(v.begin(), v.end(), std::less<>{}, random_pivot_selector{ mt_rng });
 			assert(v == sorted);
 		}
 		xorshift64 xs_rng;
 		{
 			std::vector v{ 11,12,13,14,15,16,17,18,19,20,1,2,3,4,5,6,7,8,9,10 };
-			hoare_quicksort(v.begin(), v.end(), std::less<>{}, random_pivot_selector{ xs_rng });
+			hoare_quicksort<16>{}(v.begin(), v.end(), std::less<>{}, random_pivot_selector{ xs_rng });
 			assert(v == sorted);
 		}
 		{
 			std::vector v{ 20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1 };
-			hoare_quicksort(v.begin(), v.end(), std::less<>{}, random_pivot_selector{ xs_rng });
+			hoare_quicksort<16>{}(v.begin(), v.end(), std::less<>{}, random_pivot_selector{ xs_rng });
 			assert(v == sorted);
 		}
 	}

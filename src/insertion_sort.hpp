@@ -4,10 +4,6 @@
 #include <iterator>
 #include <memory>
 
-#ifndef INSERTION_SORT_THRESHOLD
-#define INSERTION_SORT_THRESHOLD (16)
-#endif
-
 // Moves *it forward until it is just after an element that is not larger than it.
 template <typename RandomIt, typename Compare>
 inline void unguarded_linear_insert_impl(RandomIt it, Compare&& comp) {
@@ -40,19 +36,23 @@ inline void guarded_insertion_sort_impl(RandomIt first, RandomIt last, Compare&&
     }
 }
 
-// Expects: Each element is less than INSERTION_SORT_THRESHOLD positions away from its proper location, and last-first>=2
+// Expects: Each element is less than InsertionSortThreshold positions away from its proper location, and last-first>=2
 // Ensures: Range is sorted.
-template <typename RandomIt, typename Compare>
-inline void final_insertion_sort(RandomIt first, RandomIt last, Compare&& comp) {
-    assert(first + 2 <= last);
-    if (last - first > static_cast<std::ptrdiff_t>(INSERTION_SORT_THRESHOLD)) {
-        RandomIt threshold_it = first + INSERTION_SORT_THRESHOLD + 1;
-        guarded_insertion_sort_impl(first, threshold_it, comp);
-        for (RandomIt it = threshold_it; it != last; ++it) {
-            unguarded_linear_insert_impl(it, comp);
+template <int InsertionSortThreshold>
+class final_insertion_sort {
+public:
+    template <typename RandomIt, typename Compare>
+    void operator()(RandomIt first, RandomIt last, Compare&& comp) {
+        assert(first + 2 <= last);
+        if (last - first > static_cast<std::ptrdiff_t>(InsertionSortThreshold)) {
+            RandomIt threshold_it = first + InsertionSortThreshold + 1;
+            guarded_insertion_sort_impl(first, threshold_it, comp);
+            for (RandomIt it = threshold_it; it != last; ++it) {
+                unguarded_linear_insert_impl(it, comp);
+            }
+        }
+        else {
+            guarded_insertion_sort_impl(first, last, std::forward<Compare>(comp));
         }
     }
-    else {
-        guarded_insertion_sort_impl(first, last, std::forward<Compare>(comp));
-    }
-}
+};

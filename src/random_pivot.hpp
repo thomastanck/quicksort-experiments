@@ -6,7 +6,6 @@
 
 template <typename RandomIt, typename URBG>
 inline RandomIt get_random_pivot(RandomIt first, RandomIt last, URBG&& urbg) {
-    assert(last - first > static_cast<std::ptrdiff_t>(INSERTION_SORT_THRESHOLD));
     return first + std::uniform_int_distribution<std::ptrdiff_t>(0, last - first - 1)(std::forward<URBG>(urbg));
 }
 

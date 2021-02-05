@@ -6,7 +6,6 @@
 
 template <typename RandomIt, typename Compare>
 inline RandomIt get_tri_median_pivot(RandomIt first, RandomIt last, Compare&& comp) {
-    assert(last - first > static_cast<std::ptrdiff_t>(INSERTION_SORT_THRESHOLD));
     const RandomIt b = first + (std::distance(first, last) >> 1);
     const RandomIt a = first;
     const RandomIt c = last - 2;
