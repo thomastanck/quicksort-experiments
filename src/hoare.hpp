@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include <cassert>
 
 #include "insertion_sort.hpp"
 
