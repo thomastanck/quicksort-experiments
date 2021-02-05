@@ -82,8 +82,11 @@ gen_dataset_fs = {
     "decreasing_increasing": gen_decreasing_increasing,
 }
 
-gen_val_fs = {
+int_gen_val_fs = {
     "int": random_int,
+}
+
+str_gen_val_fs = {
     "fixed_short_str": random_fixed_short,
     "fixed_long_str": random_fixed_long,
     "variable_short_str": random_variable_short,
@@ -93,34 +96,40 @@ gen_val_fs = {
 def main():
     parser = argparse.ArgumentParser(description='Generate dataset for quicksort')
     parser.add_argument('--seed', type=int, default=0, help='Random seed')
+    parser.add_argument('--type', type=str, default=0, help='Datatype to use (str or int)')
     parser.add_argument('--dataset', type=int, default=0, help='Dataset to use. Refer to --list.')
     parser.add_argument('--size', type=int, default=1000, help='Size of data')
     parser.add_argument('--list', default=False, action='store_true', help='List options')
     args = parser.parse_args()
 
+    if not args.type:
+        print('Please specify the type')
+        print()
+        parser.print_help()
+        return
+    options = gen_options(gen_dataset_fs, int_gen_val_fs if args.type == "int" else str_gen_val_fs)
+
     if args.list:
-        print_options()
+        print_options(options)
         return
 
     random.seed(args.seed)
-    options = gen_options()
-    gen_dataset_f, gen_val = options[args.dataset]
+    _, gen_dataset_f, _, gen_val = options[args.dataset]
     data = gen_dataset_f(args.size, gen_val)
     print('\n'.join([str(n) for n in data]))
 
-def gen_options():
+def gen_options(gen_dataset_fs, gen_val_fs):
     options = []
     for case, gen_dataset_f in gen_dataset_fs.items():
         for val_type, gen_val in gen_val_fs.items():
-            options.append((gen_dataset_f, gen_val))
+            options.append((case, gen_dataset_f, val_type, gen_val))
     return options
 
-def print_options():
+def print_options(options):
     i = 0
-    for case, gen_dataset_f in gen_dataset_fs.items():
-        for val_type, gen_val in gen_val_fs.items():
-            print(str(i) + ' - ' + case + " " + val_type)
-            i = i + 1
+    for case, gen_dataset_f, val_type, gen_val in options:
+        print(str(i) + ' - ' + case + " " + val_type)
+        i = i + 1
 
 if __name__ == '__main__':
     main()
