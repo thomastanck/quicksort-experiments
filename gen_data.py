@@ -3,8 +3,6 @@ import os
 import random
 import string
 
-dataset_sizes = [1e4, 1e6, 1e8]
-data_folder = './datasets/'
 fixed_short_len = 10
 fixed_long_len = 120
 variable_short = range(1, fixed_short_len)
@@ -95,29 +93,34 @@ gen_val_fs = {
 def main():
     parser = argparse.ArgumentParser(description='Generate dataset for quicksort')
     parser.add_argument('--seed', type=int, default=0, help='Random seed')
-    parser.set_defaults(string=False)
+    parser.add_argument('--dataset', type=int, default=0, help='Dataset to use. Refer to --list.')
+    parser.add_argument('--size', type=int, default=1000, help='Size of data')
+    parser.add_argument('--list', default=False, action='store_true', help='List options')
     args = parser.parse_args()
 
-    try:
-        os.mkdir(data_folder)
-    except:
-        print('data folder already exists')
+    if args.list:
+        print_options()
+        return
 
     random.seed(args.seed)
-    gen_data()
+    options = gen_options()
+    gen_dataset_f, gen_val = options[args.dataset]
+    data = gen_dataset_f(args.size, gen_val)
+    print('\n'.join([str(n) for n in data]))
 
-def gen_data():
+def gen_options():
+    options = []
     for case, gen_dataset_f in gen_dataset_fs.items():
-        for size in dataset_sizes:
-            for val_type, gen_val in gen_val_fs.items():
-                size = int(size)
-                filename = case + '_' + val_type + '_' + str(size)
-                path = os.path.join(data_folder, filename)
-                data = gen_dataset_f(size, gen_val)
-                f = open(path, "w")
-                f.write("\n".join([str(n) for n in data]))
-                f.close()
-    
+        for val_type, gen_val in gen_val_fs.items():
+            options.append((gen_dataset_f, gen_val))
+    return options
+
+def print_options():
+    i = 0
+    for case, gen_dataset_f in gen_dataset_fs.items():
+        for val_type, gen_val in gen_val_fs.items():
+            print(str(i) + ' - ' + case + " " + val_type)
+            i = i + 1
 
 if __name__ == '__main__':
     main()
