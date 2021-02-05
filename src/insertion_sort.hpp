@@ -4,7 +4,9 @@
 #include <iterator>
 #include <memory>
 
-constexpr inline std::size_t INSERTION_SORT_THRESHOLD = 16;
+#ifndef INSERTION_SORT_THRESHOLD
+#define INSERTION_SORT_THRESHOLD (16)
+#endif
 
 // Moves *it forward until it is just after an element that is not larger than it.
 template <typename RandomIt, typename Compare>
