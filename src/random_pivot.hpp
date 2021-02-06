@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iterator>
 #include <random>
 #include <utility>
 
@@ -94,6 +95,27 @@ public:
         RandomIt it1 = get_random_pivot(first, last, _urbg);
         RandomIt it2 = get_random_pivot(first, last - 1, _urbg);
         RandomIt it3 = get_random_pivot(first, last - 2, _urbg);
+
+        // more magic to do this branch free
+
+        intptr_t cmp = it2 >= it1;
+        it2 += cmp;
+        cmp--;
+        // cmp = 0x00... if it1 < it2, else cmp = 0xff...
+        // if it1 < it2, we do:
+        //      it3 \in [first, it1) no incr,
+        //      it3 \in [it1, it2-1) incr once,
+        //      it3 \in [it2-1, last-2) incr twice
+        auto it1p = reinterpret_cast<intptr_t>(&*it1);
+        auto it2p = reinterpret_cast<intptr_t>(&*it2);
+        auto it3p = reinterpret_cast<intptr_t>(&*it3);
+        auto it3p1 = reinterpret_cast<intptr_t>(&*(it3 + 1));
+        it3 += (it3p >= ((~cmp & it1p) | (cmp & it2p))) + // first incr
+               (it3p1 >= ((~cmp & it2p) | (cmp & it1p))); // second incr
+
+        // The code above should do the same thing as the code below
+
+        /*
         it2 += it2 >= it1;
         if (it1 < it2) {
             it3 += it3 >= it1;
@@ -103,6 +125,11 @@ public:
             it3 += it3 >= it2;
             it3 += it3 >= it1;
         }
+        */
+
+        assert(it1 != it2);
+        assert(it1 != it3);
+        assert(it2 != it3);
         return { it1, it2, it3 };
     }
 };
