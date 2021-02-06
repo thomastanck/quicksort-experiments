@@ -13,7 +13,7 @@ make -q sorting_benchmark || make sorting_benchmark
 echo dataset_seed, dataset_id, dataset_size, sorter_id, num_repeats, milliseconds > str_stats
 # for dataset_id in $(seq 0 27); do
 for dataset_id in $(seq 0 0); do
-    for dataset_size in 100000 10000 10000 1000 1000; do
+    for dataset_size in 100000 1000; do
         num_measurements=100
         for dataset_seed in $(seq $num_measurements); do
             python gen_data.py --seed=$dataset_seed --dataset=$dataset_id --size=$dataset_size --type=str > dataset
@@ -29,7 +29,7 @@ done
 # test int datasets
 echo dataset_seed, dataset_id, dataset_size, sorter_id, num_repeats, milliseconds > int_stats
 for dataset_id in $(seq 0 6); do
-    for dataset_size in 100000 10000 10000 1000 1000; do
+    for dataset_size in 100000 1000; do
         num_measurements=100
         for dataset_seed in $(seq $num_measurements); do
             python gen_data.py --seed=$dataset_seed --dataset=$dataset_id --size=$dataset_size --type=int > dataset
