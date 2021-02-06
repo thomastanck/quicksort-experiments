@@ -9,7 +9,9 @@
 #include "sorters.hpp"
 
 static void clobber() {
+#if defined(__GNUC__)
   asm volatile("" : : : "memory");
+#endif
 }
 
 void usage() {
