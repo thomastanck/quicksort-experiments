@@ -99,3 +99,5 @@ for dataset_id in $int_datasets; do
         done
     done
 done
+
+rm $dataset_filename
