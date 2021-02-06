@@ -53,7 +53,11 @@ for dataset_id in $str_datasets; do
         python gen_data.py --seed=$dataset_seed --dataset=$dataset_id --size=$dataset_size --type=str > dataset
         for sorter_id in $sorter_ids; do
             num_repeats=$((5000000 / $dataset_size))
-            benchmark_info=$(./sorting_benchmark string $sorter_id $num_repeats $dataset_seed < dataset)
+            # std::sort never takes longer than 2 seconds on any of the datasets
+            # so let's timeout after 10 seconds, since we know it probably hit some worst case,
+            # or is just really bad in general.
+            # echo -n makes sure this subcommand always succeeds
+            benchmark_info=$(timeout 10 ./sorting_benchmark string $sorter_id $num_repeats $dataset_seed < dataset; echo -n)
             milliseconds=$(echo $benchmark_info | cut -f1 -d' ')
             move_count=$(echo $benchmark_info | cut -f2 -d' ')
             swap_count=$(echo $benchmark_info | cut -f3 -d' ')
@@ -76,7 +80,11 @@ for dataset_id in $int_datasets; do
         python gen_data.py --seed=$dataset_seed --dataset=$dataset_id --size=$dataset_size --type=int > dataset
         for sorter_id in $sorter_ids; do
             num_repeats=$((5000000 / $dataset_size))
-            benchmark_info=$(./sorting_benchmark string $sorter_id $num_repeats $dataset_seed < dataset)
+            # std::sort never takes longer than 2 seconds on any of the datasets
+            # so let's timeout after 10 seconds, since we know it probably hit some worst case,
+            # or is just really bad in general.
+            # echo -n makes sure this subcommand always succeeds
+            benchmark_info=$(timeout 10 ./sorting_benchmark string $sorter_id $num_repeats $dataset_seed < dataset; echo -n)
             milliseconds=$(echo $benchmark_info | cut -f1 -d' ')
             move_count=$(echo $benchmark_info | cut -f2 -d' ')
             swap_count=$(echo $benchmark_info | cut -f3 -d' ')
