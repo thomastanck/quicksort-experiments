@@ -67,40 +67,56 @@ inline std::tuple<RandomIt, RandomIt, RandomIt, RandomIt, RandomIt, RandomIt> th
     --last;
     ++first;
 
-    // first: next element on left side to compare
-    // last: next element on right side to compare
-    // low_end: last element (not past the end!) of the first subarray
-    // high_begin: first element of the last subarray
-    while (true) {
-        while (comp(*first, pivot_mid)) {
-            // *first should go into the first or second partition
+    // find an element strictly smaller than pivot_mid, to place at the front position
+    for (; last != first; --last) {
+        if (comp(*last, *pivot_mid))
+            break;
+    }
+    if (comp(*last, *pivot_low)) {
+        low_end = first;
+    }
+    if (last != first) {
+        std::iter_swap(first, last);
+        ++first;
+
+        // first: next element on left side to compare
+        // last: next element on right side to compare
+        // low_end: last element (not past the end!) of the first subarray
+        // high_begin: first element of the last subarray
+        while (true) {
+            while (comp(*first, pivot_mid)) {
+                // *first should go into the first or second partition
+                if (comp(*first, *pivot_low)) {
+                    // *first should go into the first partition
+                    std::iter_swap(++low_end, first);
+                }
+                ++first;
+            }
+            while (!comp(*last, pivot_mid)) {
+                // *last should go into the third or fourth partition
+                if (comp(*pivot_high, *last)) {
+                    // *last should go into the fourth partition
+                    std::iter_swap(--high_begin, last);
+                }
+                --last;
+            }
+            if (first > last)
+                break;
+            assert(first < last);
+            std::iter_swap(first, last);
             if (comp(*first, *pivot_low)) {
                 // *first should go into the first partition
                 std::iter_swap(++low_end, first);
             }
-            ++first;
-        }
-        while (!comp(*last, pivot_mid)) {
-            // *last should go into the third or fourth partition
             if (comp(*pivot_high, *last)) {
                 // *last should go into the fourth partition
                 std::iter_swap(--high_begin, last);
             }
+            ++first;
             --last;
         }
-        if (first > last)
-            break;
-        assert(first < last);
-        std::iter_swap(first, last);
-        if (comp(*first, *pivot_low)) {
-            // *first should go into the first partition
-            std::iter_swap(++low_end, first);
-        }
-        if (comp(*pivot_high, *last)) {
-            // *last should go into the fourth partition
-            std::iter_swap(--high_begin, last);
-        }
-        ++first;
+    }
+    else {
         --last;
     }
 

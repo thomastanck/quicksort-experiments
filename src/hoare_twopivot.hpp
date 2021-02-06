@@ -39,7 +39,7 @@ inline std::tuple<RandomIt, RandomIt, RandomIt, RandomIt> twopivot_hoare_partiti
     --last;
     ++first;
 
-    // find an element strictly smaller than pivot, to place at the front position
+    // find an element strictly smaller than pivot_high, to place at the front position
     for (; last != first; --last) {
         if (comp(*last, *pivot_high))
             break;
