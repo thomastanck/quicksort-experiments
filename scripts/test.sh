@@ -42,20 +42,25 @@ dataset_sizes="100000 1000"
 sorter_ids=${sorter_ids:-$(seq 0 4)}
 
 : test str datasets
-echo dataset_seed, dataset_id, dataset_size, sorter_id, num_repeats, milliseconds > str_stats
+echo dataset_seed, dataset_id, dataset_size, sorter_id, num_repeats, milliseconds, cpu, ram > str_stats
 for dataset_id in $str_datasets; do
     for dataset_size in $dataset_sizes; do
         python gen_data.py --seed=$dataset_seed --dataset=$dataset_id --size=$dataset_size --type=str > dataset
         for sorter_id in $sorter_ids; do
             num_repeats=$((5000000 / $dataset_size))
             milliseconds=$(./sorting_benchmark string $sorter_id $num_repeats < dataset)
-            echo $dataset_seed, $dataset_id, $dataset_size, $sorter_id, $num_repeats, $milliseconds >> str_stats
+            CPU=`top -b -n1 | grep "Cpu(s)" | awk '{print $2 + $4}'`
+            FREE_DATA=`free -m | grep Mem` 
+            CURRENT=`echo $FREE_DATA | cut -f3 -d' '`
+            TOTAL=`echo $FREE_DATA | cut -f2 -d' '`
+            RAM=$(echo "scale = 2; $CURRENT/$TOTAL*100" | bc)
+            echo $dataset_seed, $dataset_id, $dataset_size, $sorter_id, $num_repeats, $milliseconds, $CPU, $RAM >> str_stats
         done
     done
 done
 
 : test int datasets
-echo dataset_seed, dataset_id, dataset_size, sorter_id, num_repeats, milliseconds > int_stats
+echo dataset_seed, dataset_id, dataset_size, sorter_id, num_repeats, milliseconds, cpu, ram > int_stats
 
 for dataset_id in $int_datasets; do
     for dataset_size in $dataset_sizes; do
@@ -63,7 +68,12 @@ for dataset_id in $int_datasets; do
         for sorter_id in $sorter_ids; do
             num_repeats=$((5000000 / $dataset_size))
             milliseconds=$(./sorting_benchmark int $sorter_id $num_repeats < dataset)
-            echo $dataset_seed, $dataset_id, $dataset_size, $sorter_id, $num_repeats, $milliseconds >> int_stats
+            CPU=`top -b -n1 | grep "Cpu(s)" | awk '{print $2 + $4}'`
+            FREE_DATA=`free -m | grep Mem` 
+            CURRENT=`echo $FREE_DATA | cut -f3 -d' '`
+            TOTAL=`echo $FREE_DATA | cut -f2 -d' '`
+            RAM=$(echo "scale = 2; $CURRENT/$TOTAL*100" | bc)
+            echo $dataset_seed, $dataset_id, $dataset_size, $sorter_id, $num_repeats, $milliseconds, $CPU, $RAM >> int_stats
         done
     done
 done
