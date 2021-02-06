@@ -39,33 +39,46 @@ inline std::tuple<RandomIt, RandomIt, RandomIt, RandomIt> twopivot_hoare_partiti
     --last;
     ++first;
 
-    // first: next element on left side to compare
-    // last: next element on right side to compare
-    // low_end: last element (not past the end!) of the first subarray
-    while (true) {
-        while (comp(*first, *pivot_high)) {
-            // *first should go into the first or second partition
+    // find an element strictly smaller than pivot, to place at the front position
+    for (; last != first; --last) {
+        if (comp(*last, *pivot_high))
+            break;
+    }
+    if (comp(*last, *pivot_low)) {
+        low_end = first;
+    }
+    if (last != first) {
+        std::iter_swap(first, last);
+        ++first;
+
+        // first: next element on left side to compare
+        // last: next element on right side to compare
+        // low_end: last element (not past the end!) of the first subarray
+        while (true) {
+            while (comp(*first, *pivot_high)) {
+                // *first should go into the first or second partition
+                if (comp(*first, *pivot_low)) {
+                    // *first should go into the first partition
+                    std::iter_swap(++low_end, first);
+                }
+                ++first;
+            }
+            while (!comp(*last, *pivot_high)) {
+                --last;
+            }
+            if (first > last)
+                break;
+            assert(first < last);
+            std::iter_swap(first, last);
             if (comp(*first, *pivot_low)) {
                 // *first should go into the first partition
                 std::iter_swap(++low_end, first);
             }
             ++first;
-        }
-        while (!comp(*last, *pivot_high)) {
             --last;
         }
-        if (first > last)
-            break;
-        assert(first < last);
-        std::iter_swap(first, last);
-        if (comp(*first, *pivot_low)) {
-            // *first should go into the first partition
-            std::iter_swap(++low_end, first);
-        }
-        ++first;
-        --last;
+        ++last;
     }
-    ++last;
 
     // increment last to the first element strictly greater than *pivot_high
     for (; last != pivot_high; ++last) {
