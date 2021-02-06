@@ -14,19 +14,19 @@ static xorshift64 xs_rng;
 static auto sorters =
     std::tuple(
             std_sort_sort{},
-            make_hoare_quicksort<16>(std::less<>{}, tri_median_pivot_selector{}),
-            make_hoare_quicksort<16>(std::less<>{}, random_pivot_selector{ xs_rng }),
-            make_twopivot_hoare_quicksort<16>(std::less<>{}, five_median_bipivot_selector{}),
-            make_twopivot_hoare_quicksort<16>(std::less<>{}, random_twopivot_selector{ xs_rng }),
-            make_threepivot_hoare_quicksort<16>(std::less<>{}, five_median_tripivot_selector{}),
-            make_threepivot_hoare_quicksort<16>(std::less<>{}, random_threepivot_selector{ xs_rng }),
+            make_hoare_quicksort<16>(tri_median_pivot_selector{}),
+            make_hoare_quicksort<16>(random_pivot_selector{ xs_rng }),
+            make_twopivot_hoare_quicksort<16>(five_median_bipivot_selector{}),
+            make_twopivot_hoare_quicksort<16>(random_twopivot_selector{ xs_rng }),
+            make_threepivot_hoare_quicksort<16>(seven_median_tripivot_selector{}),
+            make_threepivot_hoare_quicksort<16>(random_threepivot_selector{ xs_rng }),
 
-            make_hoare_quicksort<16>(std::less<>{}, tri_median_pivot_selector{}),
-            make_hoare_quicksort<32>(std::less<>{}, tri_median_pivot_selector{}),
-            make_hoare_quicksort<16>(std::less<>{}, random_pivot_selector{ mt_rng }),
-            make_hoare_quicksort<32>(std::less<>{}, random_pivot_selector{ mt_rng }),
-            make_hoare_quicksort<16>(std::less<>{}, random_pivot_selector{ xs_rng }),
-            make_hoare_quicksort<32>(std::less<>{}, random_pivot_selector{ xs_rng }));
+            make_hoare_quicksort<16>(tri_median_pivot_selector{}),
+            make_hoare_quicksort<32>(tri_median_pivot_selector{}),
+            make_hoare_quicksort<16>(random_pivot_selector{ mt_rng }),
+            make_hoare_quicksort<32>(random_pivot_selector{ mt_rng }),
+            make_hoare_quicksort<16>(random_pivot_selector{ xs_rng }),
+            make_hoare_quicksort<32>(random_pivot_selector{ xs_rng }));
 
 static constexpr auto num_sorters = std::tuple_size_v<decltype(sorters)>;
 

@@ -119,19 +119,18 @@ inline void twopivot_hoare_quicksort_impl(RandomIt first, RandomIt last, Compare
     }
 }
 
-template <size_t InsertionSortThreshold, typename Compare, typename BiPivotSelector>
+template <size_t InsertionSortThreshold, typename BiPivotSelector>
 class twopivot_hoare_quicksort {
 private:
-    Compare comp;
     BiPivotSelector bipivot_selector;
 
 public:
-    twopivot_hoare_quicksort(Compare comp, BiPivotSelector bipivot_selector)
-        : comp(std::move(comp)), bipivot_selector(std::move(bipivot_selector)) {}
+    twopivot_hoare_quicksort(BiPivotSelector bipivot_selector)
+        : bipivot_selector(std::move(bipivot_selector)) {}
 
     // Call this function to drive the whole Hoare quicksort
-    template <typename RandomIt>
-    void operator()(RandomIt first, RandomIt last) {
+    template <typename RandomIt, typename Compare>
+    void operator()(RandomIt first, RandomIt last, Compare comp) {
         const auto dist = last - first;
         if (dist >= 2) {
             twopivot_hoare_quicksort_impl<InsertionSortThreshold>(first, last, comp, std::move(bipivot_selector));
@@ -140,8 +139,8 @@ public:
     }
 };
 
-template <size_t InsertionSortThreshold, typename Compare, typename BiPivotSelector>
-twopivot_hoare_quicksort<InsertionSortThreshold, Compare, BiPivotSelector> make_twopivot_hoare_quicksort(
-    Compare comp, BiPivotSelector bipivot_selector) {
-    return twopivot_hoare_quicksort<InsertionSortThreshold, Compare, BiPivotSelector>{std::move(comp), std::move(bipivot_selector)};
+template <size_t InsertionSortThreshold, typename BiPivotSelector>
+twopivot_hoare_quicksort<InsertionSortThreshold, BiPivotSelector> make_twopivot_hoare_quicksort(
+    BiPivotSelector bipivot_selector) {
+    return twopivot_hoare_quicksort<InsertionSortThreshold, BiPivotSelector>{std::move(bipivot_selector)};
 }

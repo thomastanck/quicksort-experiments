@@ -69,7 +69,7 @@ inline std::tuple<RandomIt, RandomIt, RandomIt, RandomIt, RandomIt, RandomIt> th
 
     // find an element strictly smaller than pivot_mid, to place at the front position
     for (; last != first; --last) {
-        if (comp(*last, *pivot_mid))
+        if (comp(*last, pivot_mid))
             break;
     }
     if (comp(*last, *pivot_low)) {
@@ -177,19 +177,18 @@ inline void threepivot_hoare_quicksort_impl(RandomIt first, RandomIt last, Compa
     }
 }
 
-template <size_t InsertionSortThreshold, typename Compare, typename TriPivotSelector>
+template <size_t InsertionSortThreshold, typename TriPivotSelector>
 class threepivot_hoare_quicksort {
 private:
-    Compare comp;
     TriPivotSelector tripivot_selector;
 
 public:
-    threepivot_hoare_quicksort(Compare comp, TriPivotSelector tripivot_selector)
-        : comp(std::move(comp)), tripivot_selector(std::move(tripivot_selector)) {}
+    threepivot_hoare_quicksort(TriPivotSelector tripivot_selector)
+        : tripivot_selector(std::move(tripivot_selector)) {}
 
     // Call this function to drive the whole Hoare quicksort
-    template <typename RandomIt>
-    void operator()(RandomIt first, RandomIt last) {
+    template <typename RandomIt, typename Compare>
+    void operator()(RandomIt first, RandomIt last, Compare comp) {
         const auto dist = last - first;
         if (dist >= 2) {
             threepivot_hoare_quicksort_impl<InsertionSortThreshold>(first, last, comp, std::move(tripivot_selector));
@@ -198,8 +197,8 @@ public:
     }
 };
 
-template <size_t InsertionSortThreshold, typename Compare, typename TriPivotSelector>
-threepivot_hoare_quicksort<InsertionSortThreshold, Compare, TriPivotSelector> make_threepivot_hoare_quicksort(
-    Compare comp, TriPivotSelector tripivot_selector) {
-    return threepivot_hoare_quicksort<InsertionSortThreshold, Compare, TriPivotSelector>{std::move(comp), std::move(tripivot_selector)};
+template <size_t InsertionSortThreshold, typename TriPivotSelector>
+threepivot_hoare_quicksort<InsertionSortThreshold, TriPivotSelector> make_threepivot_hoare_quicksort(
+    TriPivotSelector tripivot_selector) {
+    return threepivot_hoare_quicksort<InsertionSortThreshold, TriPivotSelector>{std::move(tripivot_selector)};
 }

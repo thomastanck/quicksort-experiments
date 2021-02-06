@@ -78,19 +78,18 @@ inline void hoare_quicksort_impl(RandomIt first, RandomIt last, Compare&& comp, 
     }
 }
 
-template <size_t InsertionSortThreshold, typename Compare, typename PivotSelector>
+template <size_t InsertionSortThreshold, typename PivotSelector>
 class hoare_quicksort {
 private:
-    Compare comp;
     PivotSelector pivot_selector;
 
 public:
-    hoare_quicksort(Compare comp, PivotSelector pivot_selector)
-        : comp(std::move(comp)), pivot_selector(std::move(pivot_selector)) {}
+    hoare_quicksort(PivotSelector pivot_selector)
+        : pivot_selector(std::move(pivot_selector)) {}
 
     // Call this function to drive the whole Hoare quicksort
-    template <typename RandomIt>
-    void operator()(RandomIt first, RandomIt last) {
+    template <typename RandomIt, typename Compare>
+    void operator()(RandomIt first, RandomIt last, Compare comp) {
         const auto dist = last - first;
         if (dist >= 2) {
             hoare_quicksort_impl<InsertionSortThreshold>(first, last, comp, std::move(pivot_selector));
@@ -99,8 +98,8 @@ public:
     }
 };
 
-template <size_t InsertionSortThreshold, typename Compare, typename PivotSelector>
-hoare_quicksort<InsertionSortThreshold, Compare, PivotSelector> make_hoare_quicksort(
-        Compare comp, PivotSelector pivot_selector) {
-    return hoare_quicksort<InsertionSortThreshold, Compare, PivotSelector>{std::move(comp), std::move(pivot_selector)};
+template <size_t InsertionSortThreshold, typename PivotSelector>
+hoare_quicksort<InsertionSortThreshold, PivotSelector> make_hoare_quicksort(
+        PivotSelector pivot_selector) {
+    return hoare_quicksort<InsertionSortThreshold, PivotSelector>{std::move(pivot_selector)};
 }

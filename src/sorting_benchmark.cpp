@@ -5,7 +5,12 @@
 #include <string>
 #include <vector>
 
+#include "measure.hpp"
 #include "sorters.hpp"
+
+static void clobber() {
+  asm volatile("" : : : "memory");
+}
 
 void usage() {
     std::cerr << "Usage: ./sorting_benchmark (int | string) <ID> <num_repeats>\n";
@@ -14,7 +19,53 @@ void usage() {
         << ".\n";
 }
 
+template <typename T>
+auto measure_sorter_runtime(int sorter_id, int num_repeats, std::vector<T> dataset) {
+    std::vector<T> v;
+    v.reserve(dataset.size());
+
+    auto start = std::chrono::high_resolution_clock::now();
+
+    apply_sorter(
+            sorter_id,
+            [&](auto &&sorter) {
+                for (int i = 0; i < num_repeats; i++) {
+                    v.clear();
+                    std::copy(dataset.begin(), dataset.end(), std::back_inserter(v));
+                    sorter(v.begin(), v.end(), std::less<>{});
+                    clobber();
+                }
+            });
+
+    auto end = std::chrono::high_resolution_clock::now();
+
+    if (!std::is_sorted(v.begin(), v.end())) {
+        std::cout << "not sorted correctly\n";
+        exit(1);
+    }
+
+    return end - start;
+}
+
+template <typename T>
+auto measure_sorter_perfcounts(int sorter_id, int num_repeats, std::vector<T> dataset) {
+    counter move_ct, swap_ct;
+
+    std::vector<wrapper<T>> v;
+    v.reserve(dataset.size());
+
+    std::copy(dataset.begin(), dataset.end(), std::back_inserter(v));
+
+    apply_sorter(
+            sorter_id,
+            [&](auto &&sorter) { sorter(v.begin(), v.end(), std::less<>{}); }
+            );
+
+    return std::tie(move_ct, swap_ct);
+}
+
 auto int_sorter_benchmark(int sorter_id, int num_repeats) {
+    // Read int dataset
     std::vector<int> dataset;
     {
         std::ios_base::sync_with_stdio(false);
@@ -25,34 +76,13 @@ auto int_sorter_benchmark(int sorter_id, int num_repeats) {
         }
     }
 
-    volatile int clobber = 0;
-    std::vector<int> v;
-    v.reserve(dataset.size());
+    auto sorter_runtime = measure_sorter_runtime(sorter_id, num_repeats, dataset);
 
-    auto start = std::chrono::high_resolution_clock::now();
-
-    apply_sorter(
-            sorter_id,
-            [&](auto &&sorter) {
-                for (int i = 0; i < num_repeats; i++) {
-                    v.clear();
-                    std::copy(dataset.begin(), dataset.end(), std::back_inserter(v));
-                    sorter(v.begin(), v.end());
-                    clobber = v[0];
-                }
-            });
-
-    auto end = std::chrono::high_resolution_clock::now();
-
-    if (!std::is_sorted(v.begin(), v.end())) {
-        std::cout << "not sorted correctly\n";
-        exit(1);
-    }
-
-    return end - start;
+    return sorter_runtime;
 }
 
 auto string_sorter_benchmark(int sorter_id, int num_repeats) {
+    // Read string dataset
     std::vector<std::string> dataset;
     {
         std::ios_base::sync_with_stdio(false);
@@ -63,31 +93,9 @@ auto string_sorter_benchmark(int sorter_id, int num_repeats) {
         }
     }
 
-    volatile int clobber = 0;
-    std::vector<std::string> v;
-    v.reserve(dataset.size());
+    auto sorter_runtime = measure_sorter_runtime(sorter_id, num_repeats, dataset);
 
-    auto start = std::chrono::high_resolution_clock::now();
-
-    apply_sorter(
-            sorter_id,
-            [&](auto &&sorter) {
-                for (int i = 0; i < num_repeats; i++) {
-                    v.clear();
-                    std::copy(dataset.begin(), dataset.end(), std::back_inserter(v));
-                    sorter(v.begin(), v.end());
-                    clobber = v[0][0];
-                }
-            });
-
-    auto end = std::chrono::high_resolution_clock::now();
-
-    if (!std::is_sorted(v.begin(), v.end())) {
-        std::cout << "not sorted correctly\n";
-        exit(1);
-    }
-
-    return end - start;
+    return sorter_runtime;
 }
 
 int main(int argc, char *argv[]) {
