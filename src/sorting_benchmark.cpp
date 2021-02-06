@@ -15,7 +15,7 @@ static void clobber() {
 }
 
 void usage() {
-    std::cerr << "Usage: ./sorting_benchmark (int | string) <ID> <num_repeats>\n";
+    std::cerr << "Usage: ./sorting_benchmark (int | string) <ID> <num_repeats> <seed>\n";
     std::cerr << "ID should be between 0 and "
         << num_sorters - 1
         << ".\n";
@@ -108,7 +108,7 @@ auto string_sorter_benchmark(int sorter_id, int num_repeats) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc <= 3) {
+    if (argc <= 4) {
         usage();
         return 1;
     }
@@ -121,6 +121,11 @@ int main(int argc, char *argv[]) {
     bool is_int = int_or_string == "int";
     int sorter_id = std::stoi(argv[2]);
     int num_repeats = std::stoi(argv[3]);
+    std::string seed_string(argv[4]);
+    if (seed_string != "default") {
+        std::seed_seq seed(seed_string.begin(), seed_string.end());
+        sorters_seed(seed);
+    }
 
     auto [time_taken, move_count, swap_count, comp_count] =
         is_int

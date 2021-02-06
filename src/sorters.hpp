@@ -34,6 +34,15 @@ static auto sorters =
 static constexpr auto num_sorters = std::tuple_size_v<decltype(sorters)>;
 
 /**
+ * Initialize the RNGs with the specified seed sequence.
+ */
+template <typename Sseq>
+void sorters_seed(Sseq &seed_seq) {
+    mt_rng.seed(seed_seq);
+    xs_rng.seed(seed_seq);
+}
+
+/**
  * Calls func on the given sorter id.
  */
 template <int i = 0, typename Func>
@@ -46,5 +55,3 @@ static void apply_sorter(int sorter_id, Func func) {
         }
     }
 }
-
-
