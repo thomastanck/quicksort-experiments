@@ -3,3 +3,4 @@ int_stats
 str_stats
 sorting_benchmark
 unit_tests
+stats/
