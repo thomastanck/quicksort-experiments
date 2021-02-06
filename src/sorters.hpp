@@ -1,5 +1,6 @@
 #include "hoare.hpp"
 #include "hoare_twopivot.hpp"
+#include "hoare_threepivot.hpp"
 #include "insertion_sort.hpp"
 #include "measure.hpp"
 #include "median_pivot.hpp"
@@ -17,6 +18,8 @@ static auto sorters =
             make_hoare_quicksort<16>(std::less<>{}, random_pivot_selector{ xs_rng }),
             make_twopivot_hoare_quicksort<16>(std::less<>{}, five_median_bipivot_selector{}),
             make_twopivot_hoare_quicksort<16>(std::less<>{}, random_twopivot_selector{ xs_rng }),
+            make_threepivot_hoare_quicksort<16>(std::less<>{}, five_median_tripivot_selector{}),
+            make_threepivot_hoare_quicksort<16>(std::less<>{}, random_threepivot_selector{ xs_rng }),
 
             make_hoare_quicksort<16>(std::less<>{}, tri_median_pivot_selector{}),
             make_hoare_quicksort<32>(std::less<>{}, tri_median_pivot_selector{}),
