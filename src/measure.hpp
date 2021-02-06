@@ -32,13 +32,13 @@ public:
 		_move_ct(std::exchange(other._move_ct, nullptr)),
 		_swap_ct(std::exchange(other._swap_ct, nullptr)),
 		_t(std::move(other._t)) {
-		_move_ct->increment();
+		if (_move_ct) _move_ct->increment();
 	};
 	wrapper& operator=(wrapper&& other) noexcept {
 		_move_ct = std::exchange(other._move_ct, nullptr);
 		_swap_ct = std::exchange(other._swap_ct, nullptr);
 		_t = std::move(other._t);
-		_move_ct->increment();
+		if (_move_ct) _move_ct->increment();
 		return *this;
 	};
 	operator T& () noexcept { return _t; }
