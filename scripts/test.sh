@@ -39,7 +39,7 @@ dataset_sizes="100000 1000"
 
 : Configure sorters to use
 : 'std::sort, {randomized, median of N} * {hoare, two pivot hoare}'
-sorter_ids=${sorter_ids:-$(seq 0 4)}
+sorter_ids=${sorter_ids:-$(seq 0 9)}
 
 : test str datasets
 echo dataset_seed, dataset_id, dataset_size, sorter_id, num_repeats, milliseconds, move_count, swap_count, comp_count, cpu, ram > $str_stats_filename
@@ -48,7 +48,7 @@ for dataset_id in $str_datasets; do
         python gen_data.py --seed=$dataset_seed --dataset=$dataset_id --size=$dataset_size --type=str > dataset
         for sorter_id in $sorter_ids; do
             num_repeats=$((5000000 / $dataset_size))
-            benchmark_info=$(./sorting_benchmark string $sorter_id $num_repeats < dataset)
+            benchmark_info=$(./sorting_benchmark string $sorter_id $num_repeats $dataset_seed < dataset)
             milliseconds=$(echo $benchmark_info | cut -f1 -d' ')
             move_count=$(echo $benchmark_info | cut -f2 -d' ')
             swap_count=$(echo $benchmark_info | cut -f3 -d' ')
@@ -71,7 +71,7 @@ for dataset_id in $int_datasets; do
         python gen_data.py --seed=$dataset_seed --dataset=$dataset_id --size=$dataset_size --type=int > dataset
         for sorter_id in $sorter_ids; do
             num_repeats=$((5000000 / $dataset_size))
-            benchmark_info=$(./sorting_benchmark string $sorter_id $num_repeats < dataset)
+            benchmark_info=$(./sorting_benchmark string $sorter_id $num_repeats $dataset_seed < dataset)
             milliseconds=$(echo $benchmark_info | cut -f1 -d' ')
             move_count=$(echo $benchmark_info | cut -f2 -d' ')
             swap_count=$(echo $benchmark_info | cut -f3 -d' ')
