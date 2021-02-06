@@ -142,34 +142,22 @@ public:
     random_median_threepivot_selector(URBG& urbg) noexcept :_urbg(urbg) {}
     template <typename RandomIt, typename Compare>
     std::tuple<RandomIt, RandomIt, RandomIt> operator()(RandomIt first, RandomIt last, Compare&& comp) {
-        RandomIt it1 = get_random_pivot(first, last, _urbg);
-        RandomIt it2 = get_random_pivot(first, last - 1, _urbg);
-        RandomIt it3 = get_random_pivot(first, last - 2, _urbg);
-        RandomIt it4 = get_random_pivot(first, last - 3, _urbg);
-        RandomIt it5 = get_random_pivot(first, last - 4, _urbg);
-        RandomIt it6 = get_random_pivot(first, last - 5, _urbg);
-        RandomIt it7 = get_random_pivot(first, last - 6, _urbg);
-        it7 += it2 >= it1;
-        it6 += it2 >= it1;
-        it5 += it2 >= it1;
-        it4 += it2 >= it1;
-        it3 += it2 >= it1;
-        it2 += it2 >= it1;
-        it7 += it3 >= it2;
-        it6 += it3 >= it2;
-        it5 += it3 >= it2;
-        it4 += it3 >= it2;
-        it3 += it3 >= it2;
-        it7 += it4 >= it3;
-        it6 += it4 >= it3;
-        it5 += it4 >= it3;
-        it4 += it4 >= it3;
-        it7 += it5 >= it4;
-        it6 += it5 >= it4;
-        it5 += it5 >= it4;
-        it7 += it6 >= it5;
-        it6 += it6 >= it5;
-        it7 += it7 >= it6;
+        RandomIt r1 = first + (std::distance(first, last) * 0 / 7);
+        RandomIt r2 = first + (std::distance(first, last) * 1 / 7);
+        RandomIt r3 = first + (std::distance(first, last) * 2 / 7);
+        RandomIt r4 = first + (std::distance(first, last) * 3 / 7);
+        RandomIt r5 = first + (std::distance(first, last) * 4 / 7);
+        RandomIt r6 = first + (std::distance(first, last) * 5 / 7);
+        RandomIt r7 = first + (std::distance(first, last) * 6 / 7);
+        RandomIt r8 = last;
+
+        RandomIt it1 = get_random_pivot(r1, r2, _urbg);
+        RandomIt it2 = get_random_pivot(r2, r3, _urbg);
+        RandomIt it3 = get_random_pivot(r3, r4, _urbg);
+        RandomIt it4 = get_random_pivot(r4, r5, _urbg);
+        RandomIt it5 = get_random_pivot(r5, r6, _urbg);
+        RandomIt it6 = get_random_pivot(r6, r7, _urbg);
+        RandomIt it7 = get_random_pivot(r7, r8, _urbg);
         return get_median_iterator(it1, it2, it3, it4, it5, it6, it7, std::forward<Compare>(comp));
     }
 };
