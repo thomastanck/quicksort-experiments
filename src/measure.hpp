@@ -59,12 +59,13 @@ private:
 	Callable _callable;
 public:
 	counted_invocable(counter& ct, Callable callable) noexcept : _ct(&ct), _callable(std::move(callable)) {}
-	counted_invocable(const counted_invocable& other) = delete;
-	counted_invocable operator=(const counted_invocable& other) = delete;
+	counted_invocable(const counted_invocable& other) = default;
+	counted_invocable &operator=(const counted_invocable& other) = default;
 	counted_invocable(counted_invocable&& other) noexcept : _ct(std::exchange(other._ct, nullptr)), _callable(std::move(other._callable)) {}
-	counted_invocable operator=(counted_invocable&& other) noexcept {
+	counted_invocable &operator=(counted_invocable&& other) noexcept {
 		_ct = std::exchange(other._ct, nullptr);
 		_callable = std::move(other._callable);
+        return *this;
 	}
 	template <typename... Args>
 	auto operator()(Args&&... args) const noexcept(noexcept(_callable(std::forward<Args>(args)...))) {

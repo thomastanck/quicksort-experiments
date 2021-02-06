@@ -49,19 +49,24 @@ auto measure_sorter_runtime(int sorter_id, int num_repeats, std::vector<T> datas
 
 template <typename T>
 auto measure_sorter_perfcounts(int sorter_id, int num_repeats, std::vector<T> dataset) {
-    counter move_ct, swap_ct;
+    counter move_ct, swap_ct, comp_ct;
+
+    counted_invocable counter_comp(comp_ct, std::less<T>{});
 
     std::vector<wrapper<T>> v;
     v.reserve(dataset.size());
 
-    std::copy(dataset.begin(), dataset.end(), std::back_inserter(v));
+    for (const T &val : dataset) {
+        // Construct and set all the counter wrappers to values in dataset
+        v.emplace_back(move_ct, swap_ct, val);
+    }
 
     apply_sorter(
             sorter_id,
-            [&](auto &&sorter) { sorter(v.begin(), v.end(), std::less<>{}); }
+            [&](auto &&sorter) { sorter(v.begin(), v.end(), counter_comp); }
             );
 
-    return std::tie(move_ct, swap_ct);
+    return std::tuple(move_ct.value(), swap_ct.value(), comp_ct.value());
 }
 
 auto int_sorter_benchmark(int sorter_id, int num_repeats) {
@@ -77,8 +82,9 @@ auto int_sorter_benchmark(int sorter_id, int num_repeats) {
     }
 
     auto sorter_runtime = measure_sorter_runtime(sorter_id, num_repeats, dataset);
+    auto [move_count, swap_count, comp_count] = measure_sorter_perfcounts(sorter_id, num_repeats, dataset);
 
-    return sorter_runtime;
+    return std::tuple(sorter_runtime, move_count, swap_count, comp_count);
 }
 
 auto string_sorter_benchmark(int sorter_id, int num_repeats) {
@@ -94,8 +100,9 @@ auto string_sorter_benchmark(int sorter_id, int num_repeats) {
     }
 
     auto sorter_runtime = measure_sorter_runtime(sorter_id, num_repeats, dataset);
+    auto [move_count, swap_count, comp_count] = measure_sorter_perfcounts(sorter_id, num_repeats, dataset);
 
-    return sorter_runtime;
+    return std::tuple(sorter_runtime, move_count, swap_count, comp_count);
 }
 
 int main(int argc, char *argv[]) {
@@ -113,12 +120,18 @@ int main(int argc, char *argv[]) {
     int sorter_id = std::stoi(argv[2]);
     int num_repeats = std::stoi(argv[3]);
 
-    auto time_taken = is_int
+    auto [time_taken, move_count, swap_count, comp_count] =
+        is_int
         ? int_sorter_benchmark(sorter_id, num_repeats)
         : string_sorter_benchmark(sorter_id, num_repeats);
+
     auto time_taken_in_milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(time_taken);
 
-    std::cout << time_taken_in_milliseconds.count() << "\n";
+    std::cout
+        << time_taken_in_milliseconds.count() << ' '
+        << move_count << ' '
+        << swap_count << ' '
+        << comp_count << '\n';
 
     return 0;
 }
