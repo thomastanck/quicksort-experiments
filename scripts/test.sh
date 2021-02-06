@@ -34,12 +34,17 @@ str_datasets=${str_datasets:-0 1 2 3 $(seq 7 4 27)}
 : Test all int datasets
 int_datasets=${int_datasets:-$(seq 0 6)}
 
+: Randomize the order datasets are processed
+str_datasets=$(echo $(echo $str_datasets | tr ' ' $'\n' | shuf))
+int_datasets=$(echo $(echo $int_datasets | tr ' ' $'\n' | shuf))
+
 : Configure dataset sizes
 dataset_sizes="100000 1000"
 
 : Configure sorters to use
 : 'std::sort, {randomized, median of N} * {hoare, two pivot hoare}'
 sorter_ids=${sorter_ids:-$(seq 0 9)}
+sorter_ids=$(echo $(echo $sorter_ids | tr ' ' $'\n' | shuf))
 
 : test str datasets
 echo dataset_seed, dataset_id, dataset_size, sorter_id, num_repeats, milliseconds, move_count, swap_count, comp_count, cpu, ram > $str_stats_filename
