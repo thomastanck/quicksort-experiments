@@ -33,7 +33,7 @@ auto int_sorter_benchmark(int sorter_id, int num_repeats) {
 
     apply_sorter(
             sorter_id,
-            [&](auto sorter) {
+            [&](auto &&sorter) {
                 for (int i = 0; i < num_repeats; i++) {
                     v.clear();
                     std::copy(dataset.begin(), dataset.end(), std::back_inserter(v));
@@ -71,7 +71,7 @@ auto string_sorter_benchmark(int sorter_id, int num_repeats) {
 
     apply_sorter(
             sorter_id,
-            [&](auto sorter) {
+            [&](auto &&sorter) {
                 for (int i = 0; i < num_repeats; i++) {
                     v.clear();
                     std::copy(dataset.begin(), dataset.end(), std::back_inserter(v));
