@@ -38,3 +38,22 @@ public:
         return { it1, it2 };
     }
 };
+
+template <typename URBG>
+struct random_threepivot_selector {
+private:
+    URBG& _urbg;
+public:
+    random_threepivot_selector(URBG& urbg) noexcept :_urbg(urbg) {}
+    template <typename RandomIt, typename Compare>
+    std::tuple<RandomIt, RandomIt, RandomIt> operator()(RandomIt first, RandomIt last, Compare&&) {
+        // magic to pick two distinct pivots
+        RandomIt it1 = get_random_pivot(first, last, _urbg);
+        RandomIt it2 = get_random_pivot(first, last - 1, _urbg);
+        RandomIt it3 = get_random_pivot(first, last - 2, _urbg);
+        it3 += it2 >= it1;
+        it2 += it2 >= it1;
+        it3 += it3 >= it2;
+        return { it1, it2, it3 };
+    }
+};
