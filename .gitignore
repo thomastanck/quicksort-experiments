@@ -2,5 +2,6 @@ dataset
 int_stats
 str_stats
 sorting_benchmark
+sorting_benchmark_debug
 unit_tests
 stats/
