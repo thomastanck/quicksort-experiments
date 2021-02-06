@@ -24,12 +24,12 @@ int_stats_filename=stats/int_stats_${BASHPID}_${dataset_seed}
 # : Test all str types on all datasets
 # str_datasets=${str_datasets:-$(seq 0 27)}
 
-# : Only test all str types on random dataset
-# : Other datasets always use variable long str
-# str_datasets=${str_datasets:-0 1 2 3 $(seq 7 4 27)}
+: Only test all str types on random dataset
+: Other datasets always use variable long str
+str_datasets=${str_datasets:-0 1 2 3 $(seq 7 4 27)}
 
-: Test only one str dataset
-str_datasets=${str_datasets:-0}
+# : Test only one str dataset
+# str_datasets=${str_datasets:-0}
 
 : Test all int datasets
 int_datasets=${int_datasets:-$(seq 0 6)}
