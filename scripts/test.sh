@@ -15,9 +15,10 @@ mkdir -p stats
 : Generate random seed
 dataset_seed=$RANDOM$RANDOM$RANDOM
 
-: generate stats filenames
+: generate filenames
 str_stats_filename=stats/str_stats_${BASHPID}_${dataset_seed}
 int_stats_filename=stats/int_stats_${BASHPID}_${dataset_seed}
+dataset_filename=dataset_${BASHPID}
 
 : Configure which datasets to use
 
@@ -50,14 +51,14 @@ sorter_ids=$(echo $(echo $sorter_ids | tr ' ' $'\n' | shuf))
 echo dataset_seed, dataset_id, dataset_size, sorter_id, num_repeats, milliseconds, move_count, swap_count, comp_count, cpu, ram > $str_stats_filename
 for dataset_id in $str_datasets; do
     for dataset_size in $dataset_sizes; do
-        python gen_data.py --seed=$dataset_seed --dataset=$dataset_id --size=$dataset_size --type=str > dataset
+        python gen_data.py --seed=$dataset_seed --dataset=$dataset_id --size=$dataset_size --type=str > $dataset_filename
         for sorter_id in $sorter_ids; do
             num_repeats=$((5000000 / $dataset_size))
             # std::sort never takes longer than 2 seconds on any of the datasets
             # so let's timeout after 10 seconds, since we know it probably hit some worst case,
             # or is just really bad in general.
             # echo -n makes sure this subcommand always succeeds
-            benchmark_info=$(timeout 10 ./sorting_benchmark string $sorter_id $num_repeats $dataset_seed < dataset; echo -n)
+            benchmark_info=$(timeout 10 ./sorting_benchmark string $sorter_id $num_repeats $dataset_seed < $dataset_filename; echo -n)
             milliseconds=$(echo $benchmark_info | cut -f1 -d' ')
             move_count=$(echo $benchmark_info | cut -f2 -d' ')
             swap_count=$(echo $benchmark_info | cut -f3 -d' ')
@@ -77,14 +78,14 @@ echo dataset_seed, dataset_id, dataset_size, sorter_id, num_repeats, millisecond
 
 for dataset_id in $int_datasets; do
     for dataset_size in $dataset_sizes; do
-        python gen_data.py --seed=$dataset_seed --dataset=$dataset_id --size=$dataset_size --type=int > dataset
+        python gen_data.py --seed=$dataset_seed --dataset=$dataset_id --size=$dataset_size --type=int > $dataset_filename
         for sorter_id in $sorter_ids; do
             num_repeats=$((5000000 / $dataset_size))
             # std::sort never takes longer than 2 seconds on any of the datasets
             # so let's timeout after 10 seconds, since we know it probably hit some worst case,
             # or is just really bad in general.
             # echo -n makes sure this subcommand always succeeds
-            benchmark_info=$(timeout 10 ./sorting_benchmark string $sorter_id $num_repeats $dataset_seed < dataset; echo -n)
+            benchmark_info=$(timeout 10 ./sorting_benchmark string $sorter_id $num_repeats $dataset_seed < $dataset_filename; echo -n)
             milliseconds=$(echo $benchmark_info | cut -f1 -d' ')
             move_count=$(echo $benchmark_info | cut -f2 -d' ')
             swap_count=$(echo $benchmark_info | cut -f3 -d' ')
