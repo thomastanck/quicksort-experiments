@@ -94,9 +94,15 @@ public:
         RandomIt it1 = get_random_pivot(first, last, _urbg);
         RandomIt it2 = get_random_pivot(first, last - 1, _urbg);
         RandomIt it3 = get_random_pivot(first, last - 2, _urbg);
-        it3 += it2 >= it1;
         it2 += it2 >= it1;
-        it3 += it3 >= it2;
+        if (it1 < it2) {
+            it3 += it3 >= it1;
+            it3 += it3 >= it2;
+        }
+        else {
+            it3 += it3 >= it2;
+            it3 += it3 >= it1;
+        }
         return { it1, it2, it3 };
     }
 };
