@@ -1,6 +1,8 @@
 Run
 
-> $ make unit_tests
-> $ ./unit_tests
+```bash
+$ make unit_tests
+$ ./unit_tests
+```
 
 for unit tests :)
